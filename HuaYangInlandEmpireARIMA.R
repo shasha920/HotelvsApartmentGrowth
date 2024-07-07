@@ -18,6 +18,7 @@ library(forecast)
 library(zoo)
 options(scipen=999)
 
+#Inland Empire RevPAR
 # Load the dataset
 Inland <- read_excel("InlandEmpirePredict1.xlsx")
 
@@ -34,10 +35,10 @@ RevPAR_ts <- ts(complete_data$RevPAR, start = c(1987, 1), frequency = 12)
 
 #ARIMA model
 fit <- auto.arima(RevPAR_ts, seasonal = TRUE)
-future_forecast <- forecast(fit, h = 3)
+future_forecast <- forecast(fit, h = 12)
 
 # Plot
-plot(future_forecast, main = "6-Month Future Forecast for RevPAR", xlab = "Time", ylab = "RevPAR ($)")
+plot(future_forecast, main = "12-Month Future Forecast for RevPAR", xlab = "Time", ylab = "RevPAR ($)")
 points(future_forecast$mean, col="green", pch=19)
 text(future_forecast$mean, labels=round(future_forecast$mean, 2), pos=3)
 
@@ -62,3 +63,21 @@ legend("topleft", legend=c("Forecast", "Actual"), col=c("purple", "green"), lty=
 #accuracy
 accuracy_metrics <- accuracy(test_forecast, test_RevPAR)
 accuracy_metrics
+
+#Inland Empire RevPAU
+Inland2 <- read_excel("InlandEmpireRevPAU.xlsx")
+revpau_ts <- ts(Inland2$RevPAU, frequency = 4, start = c(2000, 1))  
+
+# ARIMA model
+fit <- auto.arima(revpau_ts)
+summary(fit)
+
+# Forecast
+forecast <- forecast(fit, h = 4)
+print(forecast)
+
+# Plot forecast
+plot(forecast, main = "Forecasted RevPAU", xlab = "Time", ylab = "RevPAU", col = "blue")
+for(i in 1:length(forecast$mean)) {
+  text(x = length(revpau_ts) + i, y = forecast$mean[i], labels = round(forecast$mean[i], 2), pos = 3, cex = 1.5) 
+}
